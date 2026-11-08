@@ -1,0 +1,196 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+// Stored account PIN
+#define STORED_PIN 1234
+
+// Function declarations
+bool login(void);
+void showMenu(void);
+void checkBalance(double balance);
+void deposit(double *balance);
+void withdraw(double *balance);
+
+int main(void)
+{
+    double balance = 5000.00;
+    int choice;
+
+    printf("================================\n");
+    printf("       WELCOME TO SATIMA BANK      \n");
+    printf("================================\n");
+
+    // Login verification
+    if (!login())
+    {
+        printf("\nAccess denied. Your session has ended.\n");
+        return 0;
+    }
+
+    printf("\nLogin successful! Welcome.\n");
+
+    // Repeat transactions until the user exits
+    while (1)
+    {
+        showMenu();
+
+        printf("Enter your choice: ");
+
+        if (scanf("%d", &choice) != 1)
+        {
+            printf("Invalid input. Please enter a number.\n");
+
+            // Clear invalid input
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF);
+
+            continue;
+        }
+
+        switch (choice)
+        {
+            case 1:
+                checkBalance(balance);
+                break;
+
+            case 2:
+                deposit(&balance);
+                break;
+
+            case 3:
+                withdraw(&balance);
+                break;
+
+            case 4:
+                printf("\nThank you for banking with ABC Bank.\n");
+                printf("Goodbye!\n");
+                return 0;
+
+            default:
+                printf("\nInvalid choice. Please select 1-4.\n");
+        }
+    }
+
+    return 0;
+}
+
+// Requirement 1: Login / PIN verification
+bool login(void)
+{
+    int enteredPIN;
+    int attempts = 0;
+
+    while (attempts < 3)
+    {
+        printf("\nEnter your PIN: ");
+
+        if (scanf("%d", &enteredPIN) != 1)
+        {
+            printf("Invalid PIN format. Enter numbers only.\n");
+
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF);
+
+            attempts++;
+            continue;
+        }
+
+        if (enteredPIN == STORED_PIN)
+        {
+            return true;
+        }
+
+        attempts++;
+
+        printf("Incorrect PIN. Attempts remaining: %d\n",
+               3 - attempts);
+    }
+
+    return false;
+}
+
+// Requirement 2: Display ATM menu
+void showMenu(void)
+{
+    printf("\n================================\n");
+    printf("            ATM MENU            \n");
+    printf("================================\n");
+    printf("1. Check Account Balance\n");
+    printf("2. Deposit Money\n");
+    printf("3. Withdraw Money\n");
+    printf("4. Exit\n");
+    printf("================================\n");
+}
+
+// Requirement 3: Balance inquiry
+void checkBalance(double balance)
+{
+    printf("\nYour current balance is: KSh %.2f\n", balance);
+}
+
+// Requirement 4: Deposit money
+void deposit(double *balance)
+{
+    double amount;
+
+    printf("\nEnter amount to deposit: KSh ");
+
+    if (scanf("%lf", &amount) != 1)
+    {
+        printf("Invalid amount. Please enter a number.\n");
+
+        int ch;
+        while ((ch = getchar()) != '\n' && ch != EOF);
+
+        return;
+    }
+
+    if (amount <= 0)
+    {
+        printf("Deposit amount must be greater than zero.\n");
+        return;
+    }
+
+    *balance += amount;
+
+    printf("\nDeposit successful!\n");
+    printf("Amount deposited: KSh %.2f\n", amount);
+    printf("New balance: KSh %.2f\n", *balance);
+}
+
+// Requirement 5: Withdraw money
+void withdraw(double *balance)
+{
+    double amount;
+
+    printf("\nEnter amount to withdraw: KSh ");
+
+    if (scanf("%lf", &amount) != 1)
+    {
+        printf("Invalid amount. Please enter a number.\n");
+
+        int ch;
+        while ((ch = getchar()) != '\n' && ch != EOF);
+
+        return;
+    }
+
+    if (amount <= 0)
+    {
+        printf("Withdrawal amount must be greater than zero.\n");
+        return;
+    }
+
+    if (amount > *balance)
+    {
+        printf("Insufficient funds!\n");
+        printf("Available balance: KSh %.2f\n", *balance);
+        return;
+    }
+
+    *balance -= amount;
+
+    printf("\nWithdrawal successful!\n");
+    printf("Amount withdrawn: KSh %.2f\n", amount);
+    printf("Remaining balance: KSh %.2f\n", *balance);
+}
